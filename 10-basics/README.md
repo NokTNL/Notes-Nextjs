@@ -16,7 +16,9 @@
 
 ## Routing
 
-- You can specify dynamic URL paths and parameters. Files with with square brackets in the file name will be treated as dynamic paths. Let say we have this folder structure:
+- You can specify dynamic URL paths and parameters. Files with with square brackets in the file name will be treated as dynamic paths.
+  - **NOTE**: It must starts & ends with [] to make it work. `a[id].tsx` does not work as dynamic URL, but will be taken literally as the path `/a[id]`
+- Let say we have this folder structure:
   ```
   /news
   L__ index.js

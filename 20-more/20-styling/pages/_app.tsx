@@ -1,23 +1,20 @@
 import Layout from "components/layout/Layout"
 import { AppProps } from "next/app"
+
+// HERE for styling options
+
+// 1. GLOBAL STYLES
+// Like CRA, NextJS supports syntax like `import "globals.css"` which is not valid JS syntax. It simply means bundling the CSS file during build.
+// You should ONLY import your global stylsheet in `pages/_app.js` to avoid name conflicts
 import "../styles/globals.css"
+// If you use npm for managing your UI library's CSS, you can import the css from the `node_modules` as well, e.g. :
+//   import 'bootstrap/dist/css/bootstrap.css'
+// This kind of library CSS import is permitted ANYWHERE in the app, not just `_app.js`
 
-// !!! NOTE: with Next v13 introducing server component, things in _app.js can be moved to the `/app` folder
+// 2. Comoponent level styles
+// NextJS supports CSS/SASS/SCSS modules, but you need to install the `sass` package
+// Modules ends with .module.css, .module..sass OR .module.scss
 
-// Without an `_app.js`, Next will render whatever page via a default `App` component and render whatever pages inside as its children: (below is simplified:)
-// import "styles/globals.css" <--- required, so that it will apply global styles
-function App() {
-  return (
-    <div id="__next" children={"" /* whatever page component is rendered */} />
-  )
-}
-
-// With an `_app.js` defined, the default App.js will be overriden and the default export from this file will instead be used
-// You can use it to wrap layouts/context providers/whatever stuff around the page component you want to render
-// Our custom `App` will receives AppProps from Next:
-// `Component` is the page comp rendered
-// `pageProps` is some other props that our page comp will receive
-// !!! remember to include "styles/globals.css" as well!
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Layout>
