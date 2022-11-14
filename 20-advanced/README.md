@@ -1,1 +1,0 @@
-- Go to `/pages/_app.tsx` on how to use custom App component
