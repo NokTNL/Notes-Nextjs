@@ -1,11 +1,11 @@
-// Use the `useRouter` hook from Next to extract parameters
-import { useRouter } from "next/router";
+// Use the `useRouter` hook from Next to access the router object
+import { useRouter } from "next/router"
 
 export default function DetailPage() {
-  // Access the router object
-  const router = useRouter();
-  // extract param from router.query
-  const { newsId, pid } = router.query;
+  // Access the router object. It stores the states and methods regarding the router
+  const router = useRouter()
+  // extract URL param from router.query
+  const { newsId, pid } = router.query
 
   return (
     <>
@@ -13,5 +13,5 @@ export default function DetailPage() {
       <p>NewsId: {newsId}</p>
       <p>pid: {pid}</p>
     </>
-  );
+  )
 }
