@@ -2,25 +2,22 @@
 // e.g. the file `/api/new-meetup.js` will become the ROUTE `/api/new-meetup`
 // You can even have credentials inside this file, as this file will NEVER run on the client
 
+import { meetupSchema } from "models/meetups"
 import { NextApiRequest, NextApiResponse } from "next"
-import { z } from "zod"
 
-const ReqDataSchema = z.object({
-  title: z.string(),
-  image: z.string(),
-  address: z.string(),
-  description: z.string(),
-})
-
-type Data = {}
+const reqDataSchema = meetupSchema.omit({ id: true })
 
 // Export default the handler that will process incoming requests
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // `req` contains method, body, headers, etc.
   if (req.method === "POST") {
-    const { title, image, address, description } = ReqDataSchema.parse(req.body)
+    const reqBody = JSON.parse(req.body)
+    const typedMeetup = reqDataSchema.parse(reqBody)
+
+    // Communicate with our DB, here is the pseudocode:
+    // db.meetups.push({ ...typedMeetup, id: Math.random().toString() })
+
+    // Response status '201' to indicate success + something has been created
+    res.status(201).json({ message: "Meetup created!" })
   }
 }

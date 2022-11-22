@@ -1,6 +1,11 @@
 import MeetupList from "../components/meetups/MeetupList"
 import { Meetup } from "models/meetups"
-import { GetServerSideProps, GetStaticProps } from "next"
+import {
+  GetServerSideProps,
+  GetStaticProps,
+  GetServerSidePropsContext,
+  InferGetStaticPropsType,
+} from "next"
 
 type HomeProps = {
   meetups: Meetup[]
@@ -31,7 +36,7 @@ const DUMMY_METTUPS: Meetup[] = [
 // If it is an async function, then NextJS will wait until the Promise is resolved before rendering the page component
 // NOTE: this export only works in page components in /pages (i.e. _app.js also doesn't work), and the function must be named exactly `getStaticProps`
 //
-//                                         vvv the type of `props` returned
+//           vvv Note: You may not need the `GetStaticProps` type assertion here; it will infer return type for you if you don't assert it
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   /**
    * e.g. run some data fetching code here, then:
@@ -54,8 +59,8 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 // Alternatively, you can use `getServerSideProps` which makes the page SERVER-SIDE RENDERED, i.e. generates a new page on each client request, at runtime
 // This is also the only option if you need access to the request/result object from the incoming client request
 // Note: I name it here with underscore to prevent Next using it
-export const getServerSideProps_: GetServerSideProps<HomeProps> = async (
-  context
+export const getServerSideProps_ = async (
+  context: GetServerSidePropsContext
 ) => {
   const req = context.req
   const res = context.res
@@ -69,6 +74,8 @@ export const getServerSideProps_: GetServerSideProps<HomeProps> = async (
   }
 }
 
-export default function Home({ meetups }: HomeProps) {
+export default function Home({
+  meetups,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return <MeetupList meetups={meetups} />
 }

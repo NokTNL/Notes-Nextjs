@@ -4,11 +4,11 @@ import { FormEvent, MutableRefObject, useRef } from "react"
 import Card from "../ui/Card"
 import classes from "./NewMeetupForm.module.css"
 
-type NewMeetupForm = {
+type NewMeetupFormProps = {
   onAddMeetup: (meetupData: Omit<Meetup, "id">) => unknown
 }
 
-function NewMeetupForm(props: NewMeetupForm) {
+function NewMeetupForm(props: NewMeetupFormProps) {
   const titleInputRef = useRef() as MutableRefObject<HTMLInputElement>
   const imageInputRef = useRef() as MutableRefObject<HTMLInputElement>
   const addressInputRef = useRef() as MutableRefObject<HTMLInputElement>

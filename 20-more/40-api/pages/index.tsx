@@ -1,13 +1,9 @@
 import MeetupList from "../components/meetups/MeetupList"
-import { Meetup } from "models/meetups"
-import { GetServerSideProps, GetStaticProps } from "next"
+import { InferGetStaticPropsType } from "next"
+import { Meetup, meetupSchema } from "models/meetups"
+import { z } from "zod"
 
-type HomeProps = {
-  meetups: Meetup[]
-}
-
-// When we use static generation for pre-rendering, it only ships the page rendered after the FIRST RENDER CYCLE. Therefore, if we need to wait for data to update the rendered UI, e.g. from an API call, that data result will not be pre-rendered; instead, it is up to the CLIENT to fetch the data (e.g. in `useEffect`) and render it on the screen.
-// This is NOT WRONG, but we have the option to put this step to the server as well, using `getStaticProps`
+const meetupsResponseSchema = z.array(meetupSchema)
 
 const DUMMY_METTUPS: Meetup[] = [
   {
@@ -26,49 +22,30 @@ const DUMMY_METTUPS: Meetup[] = [
   },
 ]
 
-// `getStaticProps` is designed for fetching data from a server before the page component is rendered at build time
-// When defined, it will be run BEFORE the default page export
-// If it is an async function, then NextJS will wait until the Promise is resolved before rendering the page component
-// NOTE: this export only works in page components in /pages (i.e. _app.js also doesn't work), and the function must be named exactly `getStaticProps`
-//
-//                                         vvv the type of `props` returned
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  /**
-   * e.g. run some data fetching code here, then:
-   */
+export const getStaticProps = async () => {
+  console.log(`getStaticProps run in /pages/index.tsx`)
+
+  // Remember, `getStaticProps` NEVER runs on the client side and only at build time/on the server(when using ISR)! Therefore, it has direct access to DB
+  // e.g. const result = await db.connect().getResult() <--- pseudo-code
+
+  // Alternatively, you can use fetch() here to fetch data from an external API (that has the data ready at BUILD time)
+  // NOTE: using fetch() here in server-side code is possible only because of NextJS's polyfill.
+  // NOTE: In `getStaticProps` you CANNOT use an API route. This is because the server won't have a 'server' to get data from during build time! NextJS will fail the build if you use API route's local path here.
+
+  // Here we keep using the dummy data though, imagining it is taken from the DB
+  const response = DUMMY_METTUPS
+  const typedMeetups = meetupsResponseSchema.parse(response)
+
   return {
-    // `props` of the returned value will be passed into the page component as props
     props: {
-      meetups: DUMMY_METTUPS,
+      meetups: typedMeetups,
     },
-    /**
-     * Incremental Static generation (ISR)
-     */
-    // If data will be updated more frequently, you can revalidate the props from time to time --> not totally static!
-    // The page will be regenerated if 1. a new request come in, and, 2. the `revalidate` (in seconds) time has passed
-    // !!! NOTE: `getStaticPaths` will run on EVERY request in development mode (`next dev`), regardless of the path existing or not
-    revalidate: 10,
+    revalidate: 10, // <--- this will make the page up to date periodically
   }
 }
 
-// Alternatively, you can use `getServerSideProps` which makes the page SERVER-SIDE RENDERED, i.e. generates a new page on each client request, at runtime
-// This is also the only option if you need access to the request/result object from the incoming client request
-// Note: I name it here with underscore to prevent Next using it
-export const getServerSideProps_: GetServerSideProps<HomeProps> = async (
-  context
-) => {
-  const req = context.req
-  const res = context.res
-  /**
-   * e.g. run some data-fetching code here, then:
-   */
-  return {
-    props: {
-      meetups: DUMMY_METTUPS,
-    },
-  }
-}
-
-export default function Home({ meetups }: HomeProps) {
+export default function Home({
+  meetups,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return <MeetupList meetups={meetups} />
 }
