@@ -10,14 +10,14 @@ const DUMMY_METTUPS: Meetup[] = [
   {
     id: "m1",
     title: "A First Meetup",
-    image: "https://picsum.photos/500",
+    image: "https://picsum.photos/500/500",
     address: "Some address",
     description: "Some description",
   },
   {
     id: "m2",
     title: "A Second Meetup",
-    image: "https://picsum.photos/500",
+    image: "https://picsum.photos/500/500",
     address: "Some address",
     description: "Some description",
   },
